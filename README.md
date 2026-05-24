@@ -8,24 +8,32 @@ An AI-powered platform for continuously collecting and analyzing trends in India
 - **AI:** SentenceTransformers, OpenAI compatible layer
 - **Collection:** feedparser, playwright, beautifulsoup4, newspaper3k, scrapy
 - **Frontend:** Next.js, Tailwind, shadcn
-- **Infra:** Docker, Docker Compose
 
 ## Project Structure
 
 - `backend/`: FastAPI application and AI logic
 - `frontend/`: Next.js dashboard
-- `infra/`: Infrastructure configuration (shared with root)
 - `docs/`: Architecture and design documentation
 
-## Getting Started
+## Local Setup
 
-1. Copy `.env.example` to `.env`
-2. Run `docker compose up --build`
-3. Backend will be available at `http://localhost:8000`
-4. Frontend will be available at `http://localhost:3000`
+### Backend
+
+1. Navigate to `backend/`
+2. Create a virtual environment: `python -m venv venv`
+3. Activate it: `source venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
+5. Copy `.env.example` to `.env` and update DB credentials.
+6. Run: `uvicorn api.main:app --reload`
+
+### Frontend
+
+1. Navigate to `frontend/`
+2. Install dependencies: `npm install`
+3. Run development server: `npm run dev`
 
 ## Phase 0 Deliverables
 - [x] Running backend
 - [x] Running frontend
 - [x] DB connection checks
-- [x] Docker setup
+- [x] Local setup guide

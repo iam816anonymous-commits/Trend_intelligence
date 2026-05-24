@@ -25,7 +25,7 @@ graph TD
 
 ## Component Responsibilities
 
-- **Backend (FastAPI):** Orchestrates data flow, provides REST APIs.
-- **Qdrant:** Stores vector embeddings for semantic similarity and retrieval.
-- **Redis:** Used for caching and task queuing (Celery in later phases).
-- **Postgres:** Primary relational storage for metadata and raw content.
+- **Backend (FastAPI):** Orchestrates data flow, provides REST APIs. Runs as a standalone Python process.
+- **Qdrant:** Stores vector embeddings for semantic similarity and retrieval. (Expected as a local or managed service).
+- **Redis:** Used for caching and task queuing (Celery in later phases). (Expected as a local or managed service).
+- **Postgres:** Primary relational storage for metadata and raw content. (Expected as a local or managed service).
