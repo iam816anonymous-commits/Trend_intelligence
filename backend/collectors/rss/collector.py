@@ -1,33 +1,25 @@
+from backend.collectors.base import BaseCollector
+from sqlalchemy.orm import Session
 import feedparser
 import datetime
-import logging
-from sqlalchemy.orm import Session
-from backend.storage.models import Article, Source
 
-logger = logging.getLogger(__name__)
+class RSSCollector(BaseCollector):
+    def __init__(self, source_name, url, category):
+        self.source_name = source_name
+        self.url = url
+        self.category = category
 
-class RSSCollector:
-    def collect(self, db: Session, source: Source):
-        logger.info(f"Collecting RSS from {source.url}")
-        feed = feedparser.parse(source.url)
-
+    def collect(self, db: Session):
+        feed = feedparser.parse(self.url)
+        signals = []
         for entry in feed.entries:
-            # Check if article already exists
-            existing = db.query(Article).filter(Article.url == entry.link).first()
-            if existing:
-                continue
-
-            article = Article(
-                title=entry.get("title", ""),
-                body=entry.get("summary", "") or entry.get("description", ""),
-                source_name=source.name,
-                url=entry.link,
-                timestamp=datetime.datetime.utcnow(),
-                category=source.category,
-                country=source.country,
-                language=source.language,
-                raw_data=dict(entry)
-            )
-            db.add(article)
-
-        db.commit()
+            signals.append({
+                "title": entry.get("title", ""),
+                "body": entry.get("summary", "") or entry.get("description", ""),
+                "source": self.source_name,
+                "url": entry.link,
+                "timestamp": datetime.datetime.utcnow(),
+                "category": self.category,
+                "type": "news"
+            })
+        return self.save_signals(db, signals)

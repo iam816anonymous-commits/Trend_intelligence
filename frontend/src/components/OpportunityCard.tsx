@@ -1,20 +1,32 @@
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function OpportunityCard({ opportunity }: { opportunity: any }) {
+  const getBadgeVariant = (type: string) => {
+    switch(type) {
+      case 'D2C': return 'default';
+      case 'SaaS': return 'secondary';
+      default: return 'outline';
+    }
+  };
+
   return (
-    <Card className="border-primary/20 bg-primary/5">
-      <CardHeader>
-        <CardTitle>{opportunity.title}</CardTitle>
+    <Card className="border-primary/10 shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-lg font-bold">{opportunity.title}</CardTitle>
+        <Badge variant={getBadgeVariant(opportunity.type)}>{opportunity.type}</Badge>
       </CardHeader>
       <CardContent>
-        <p className="text-sm mb-4">{opportunity.description}</p>
-        <div className="flex justify-between items-center">
-          <span className="text-xs font-semibold px-2 py-1 bg-green-100 text-green-800 rounded">
-            Score: {opportunity.evidence_score}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            Est. Cost: ₹{opportunity.launch_cost_est.toLocaleString()}
-          </span>
+        <p className="text-sm text-muted-foreground mb-6 line-clamp-3">{opportunity.description}</p>
+        <div className="flex justify-between items-center text-xs">
+          <div className="space-y-1">
+            <p className="text-muted-foreground uppercase tracking-wider font-semibold">Evidence Score</p>
+            <p className="text-base font-bold text-primary">{Math.round(opportunity.evidence_score)}%</p>
+          </div>
+          <div className="space-y-1 text-right">
+            <p className="text-muted-foreground uppercase tracking-wider font-semibold">Launch Cost</p>
+            <p className="text-base font-bold">₹{opportunity.launch_cost_est.toLocaleString()}</p>
+          </div>
         </div>
       </CardContent>
     </Card>
