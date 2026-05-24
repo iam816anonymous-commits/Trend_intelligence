@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+psycopg2-binary
+redis
+qdrant-client
+sentence-transformers
+feedparser
+playwright
+beautifulsoup4
+newspaper3k
+scrapy
+pytest
+httpx
+python-multipart
+pydantic-settings
