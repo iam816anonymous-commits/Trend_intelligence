@@ -1,5 +1,5 @@
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { LayoutDashboard, TrendingUp, Lightbulb, Map, Brain, Settings } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Lightbulb, Map, Brain, Terminal, Settings } from "lucide-react";
 
 const items = [
   { title: "Overview", icon: LayoutDashboard, url: "/" },
@@ -7,6 +7,7 @@ const items = [
   { title: "Opportunities", icon: Lightbulb, url: "/opportunities" },
   { title: "Geo Pulse", icon: Map, url: "/geo" },
   { title: "Knowledge Base", icon: Brain, url: "/knowledge" },
+  { title: "Agent Activity", icon: Terminal, url: "/activity" },
   { title: "Settings", icon: Settings, url: "/settings" },
 ];
 

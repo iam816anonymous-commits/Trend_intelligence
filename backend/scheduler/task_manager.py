@@ -6,6 +6,7 @@ from backend.processing.enricher import SignalEnricher
 from backend.trends.pulse_engine import TrendPulseEngine
 from backend.trends.opportunity import OpportunityFinder
 from backend.trends.learning_service import LearningService
+from backend.trends.activity_service import ActivityService
 from backend.trends.alerts import AlertEngine
 
 logger = logging.getLogger("TaskManager")
@@ -15,6 +16,9 @@ class TaskManager:
         self.db = SessionLocal()
 
     def run_collection_task(self):
+        activity = ActivityService(self.db)
+        activity.log("Collection", "executing", "Starting multi-source data collection cycle.")
+
         logger.info("Task: Running collection...")
         # RSS collection
         sources = [
@@ -36,12 +40,18 @@ class TaskManager:
             enricher.enrich(sig)
 
         self.db.commit()
+        activity.log("Collection", "success", f"Enriched {len(new_signals)} new market signals.")
         logger.info(f"Task: Collection & Enrichment complete. {len(new_signals)} signals enriched.")
 
     def run_clustering_task(self):
+        activity = ActivityService(self.db)
+        activity.log("Clustering", "thinking", "Clustering recent signals to detect emerging topics.")
+
         logger.info("Task: Running clustering...")
         engine = TrendPulseEngine(self.db)
         topics = engine.run()
+
+        activity.log("Clustering", "success", f"Topic mapping complete. {len(topics)} active trends tracked.")
         logger.info(f"Task: Clustering complete. {len(topics)} topics updated.")
 
     def run_learning_task(self):

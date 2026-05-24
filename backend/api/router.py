@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from backend.storage.database import get_async_db
-from backend.storage.models import Signal, Topic, Opportunity, Knowledge, LearningLog
+from backend.storage.models import Signal, Topic, Opportunity, Knowledge, LearningLog, AgentActivity
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional, Annotated
 import datetime
@@ -53,6 +53,12 @@ async def read_knowledge(db: Annotated[AsyncSession, Depends(get_async_db)]):
 @router.get("/learning-logs")
 async def read_logs(db: Annotated[AsyncSession, Depends(get_async_db)]):
     stmt = select(LearningLog).order_by(LearningLog.timestamp.desc()).limit(20)
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
+@router.get("/agent-activities")
+async def read_activities(db: Annotated[AsyncSession, Depends(get_async_db)]):
+    stmt = select(AgentActivity).order_by(AgentActivity.timestamp.desc()).limit(50)
     result = await db.execute(stmt)
     return result.scalars().all()
 

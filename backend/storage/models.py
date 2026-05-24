@@ -85,6 +85,15 @@ class LearningLog(Base):
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     impact_area = Column(String(100))
 
+class AgentActivity(Base):
+    __tablename__ = "agent_activities"
+    id = Column(Integer, primary_key=True, index=True)
+    task_name = Column(String(100))
+    status = Column(String(50)) # thinking, executing, success, error
+    message = Column(Text)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    metadata_json = Column(JSON)
+
 class Source(Base):
     __tablename__ = "sources"
 
