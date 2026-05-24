@@ -4,6 +4,7 @@ from backend.storage.models import Article, Source, SessionLocal
 from backend.collectors.rss.collector import RSSCollector
 from backend.embeddings.vector_store import VectorStore
 from backend.trends.detector import TrendDetector
+from backend.trends.opportunity import OpportunityFinder
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -46,6 +47,11 @@ def get_trends(country: Optional[str] = "India", db: Session = Depends(get_db)):
     detector = TrendDetector()
     # Filter by country in the detector if needed
     return detector.detect_trends(db)
+
+@router.get("/opportunities")
+def get_opportunities(budget: float = 1000000, db: Session = Depends(get_db)):
+    finder = OpportunityFinder()
+    return finder.find_opportunities(db, budget=budget)
 
 @router.post("/collect")
 def collect_articles(db: Session = Depends(get_db)):

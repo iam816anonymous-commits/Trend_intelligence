@@ -22,8 +22,13 @@ class PredictionEngine:
 
     def viral_probability(self, trend_name, db: Session):
         # Heuristic: multi-source coverage increases virality
-        sources = db.query(Article.source_name).filter(
-            Article.title.contains(trend_name)
+        from backend.storage.models import Signal
+        sources = db.query(Signal.source).filter(
+            Signal.title.contains(trend_name)
         ).distinct().count()
 
         return min(sources * 10, 100)
+
+    def forecast_30_day_probability(self, trend_name, db: Session):
+        # 30-day forecast heuristic
+        return 0.75 # placeholder 75% probability
