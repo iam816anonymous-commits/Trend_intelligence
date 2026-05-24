@@ -6,44 +6,36 @@ class OpportunityFinder:
     def __init__(self, db: Session):
         self.db = db
 
-    def categorize_opp(self, topic_name):
-        # Heuristic categorization
-        topic_lower = topic_name.lower()
-        if any(w in topic_lower for w in ['drink', 'sachet', 'bottle', 'food', 'towel']):
-            return "D2C"
-        if any(w in topic_lower for w in ['software', 'app', 'tool', 'ai']):
-            return "SaaS"
-        return "Service"
-
-    def analyze_synthesis(self, topic):
-        # Look for cross-signal patterns
+    def synthesize_roadmap(self, topic):
+        # Generate execution steps based on signal types
         types = set([s.type for s in topic.signals])
-        if 'commerce' in types and 'consumer' in types:
-            return "Validated Demand: Social interest matching commerce signals."
-        if 'geo' in types and 'consumer' in types:
-            return "Localized Opportunity: Regional environmental signals driving demand."
-        return "Emerging Trend: Rising multi-source interest."
+        roadmap = ["Market validation with Google Trends"]
+        if 'commerce' in types:
+            roadmap.append("Competitor inventory tracking on Zepto/Blinkit")
+        if 'consumer' in types:
+            roadmap.append("Direct consumer sentiment analysis on Reddit/X")
+        roadmap.append("Low-cost MVP launch via Instagram ads")
+        return roadmap
 
     def find_opportunities(self):
-        # 1. Fetch High Growth Topics
-        topics = self.db.query(Topic).filter(Topic.trend_score > 30).all()
+        # Look for topics with high growth and high confidence
+        topics = self.db.query(Topic).filter(Topic.trend_score > 40, Topic.confidence > 0.5).all()
 
         opportunities = []
         for topic in topics:
             existing = self.db.query(Opportunity).filter(Opportunity.market_niche == topic.name).first()
-            if existing:
-                continue
+            if existing: continue
 
-            opp_type = self.categorize_opp(topic.name)
             opp = Opportunity(
-                title=f"Launch {topic.name} {opp_type}",
-                description=self.analyze_synthesis(topic),
+                title=f"Opportunity: {topic.name}",
+                description=f"Automated synthesis of {len(topic.signals)} signals shows high demand in {topic.name}.",
                 market_niche=topic.name,
-                type=opp_type,
+                type="D2C" if "demand" in topic.name.lower() else "SaaS",
                 evidence_score=topic.trend_score,
-                launch_cost_est=random.choice([200000, 500000, 800000, 1500000]),
+                launch_cost_est=random.choice([100000, 300000, 700000]),
                 signals_count=len(topic.signals),
-                potential_roi="High" if topic.trend_score > 70 else "Medium"
+                potential_roi="High" if topic.trend_score > 60 else "Medium",
+                execution_roadmap=self.synthesize_roadmap(topic)
             )
             self.db.add(opp)
             opportunities.append(opp)

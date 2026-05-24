@@ -1,12 +1,27 @@
-class CommerceCollector:
-    def collect_blinkit(self, db):
-        # Implementation for Blinkit trend scraping
-        pass
+from backend.collectors.base import BaseCollector
+import datetime
 
-    def collect_zepto(self, db):
-        # Implementation for Zepto trend scraping
-        pass
-
-    def collect_amazon_india(self, db):
-        # Implementation for Amazon India Best Sellers
-        pass
+class CommerceCollector(BaseCollector):
+    def collect(self, db):
+        # Simulating commerce movement signals for Tier-2/3 India
+        signals = [
+            {
+                "title": "Indore: Zepto inventory low on cooling fans",
+                "body": "Availability drop of 60% in Indore central hub.",
+                "source": "zepto",
+                "url": f"https://zepto.com/alert/{datetime.datetime.now().timestamp()}_1",
+                "category": "Appliances",
+                "region": "Indore",
+                "type": "commerce"
+            },
+            {
+                "title": "Ahmedabad: Blinkit spike in ORS & Hydration",
+                "body": "Daily sales volume exceeded peak summer average by 40%.",
+                "source": "blinkit",
+                "url": f"https://blinkit.com/alert/{datetime.datetime.now().timestamp()}_2",
+                "category": "Healthcare",
+                "region": "Ahmedabad",
+                "type": "commerce"
+            }
+        ]
+        return self.save_signals(db, signals)

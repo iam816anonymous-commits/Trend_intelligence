@@ -30,10 +30,9 @@ def test_trend_score_calculation(mock_db, mock_vs):
 def test_topic_naming(mock_db, mock_vs):
     engine = TrendPulseEngine(mock_db)
     cluster = [
-        Signal(title="Heatwave in Indore spike demand"),
-        Signal(title="Heatwave Indore towels cooling"),
-        Signal(title="Indore heatwave cooling towels rise")
+        Signal(title="Heatwave in Indore spike demand", impact_score=10),
+        Signal(title="Heatwave Indore towels cooling", impact_score=5),
+        Signal(title="Indore heatwave cooling towels rise", impact_score=2)
     ]
-    name = engine.generate_topic_name(cluster)
-    assert "Heatwave" in name
-    assert "Indore" in name
+    name = engine.generate_topic_summary(cluster)
+    assert "Heatwave in Indore spike demand" in name

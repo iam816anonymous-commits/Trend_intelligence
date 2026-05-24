@@ -1,7 +1,7 @@
 from sentence_transformers import SentenceTransformer
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
-from backend.api.main import settings
+from backend.api.config import settings
 
 class VectorStore:
     def __init__(self):

@@ -17,3 +17,9 @@ class AIAnalyst:
         for t in trends[:5]:
             report += f"- {t['trend']}: Strength {t['strength']}\n"
         return report
+
+    def synthesize_insight(self, topic):
+        # Heuristic synthesis: combine top 3 signal titles into an insight
+        top_signals = sorted(topic.signals, key=lambda s: s.impact_score if s.impact_score else 0, reverse=True)[:3]
+        titles = [s.title for s in top_signals]
+        return f"Intelligence Insight: {topic.name} is accelerating primarily due to: {', '.join(titles)}. This indicates a shift in regional demand patterns."

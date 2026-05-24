@@ -1,34 +1,25 @@
 from sqlalchemy.orm import Session
-from backend.storage.models import Article
+from backend.storage.models import TopicHistory
 import datetime
+import numpy as np
 
 class PredictionEngine:
-    def predict_momentum(self, trend_name, db: Session):
-        # In a real system, this would use time-series analysis
-        # For now, we use a simple heuristic based on recent mentions
-        count_last_3h = db.query(Article).filter(
-            Article.title.contains(trend_name),
-            Article.timestamp >= datetime.datetime.utcnow() - datetime.timedelta(hours=3)
-        ).count()
+    def calculate_momentum(self, topic_id: int, db: Session):
+        # Fetch last 5 snapshots
+        history = db.query(TopicHistory).filter(TopicHistory.topic_id == topic_id).order_by(TopicHistory.timestamp.desc()).limit(5).all()
 
-        count_last_12h = db.query(Article).filter(
-            Article.title.contains(trend_name),
-            Article.timestamp >= datetime.datetime.utcnow() - datetime.timedelta(hours=12)
-        ).count()
+        if len(history) < 2:
+            return 0.0
 
-        if count_last_3h > (count_last_12h / 4):
-            return "Rising"
-        return "Stable"
+        scores = [h.score for h in reversed(history)]
+        # Simple slope calculation
+        x = np.arange(len(scores))
+        y = np.array(scores)
+        slope, _ = np.polyfit(x, y, 1)
 
-    def viral_probability(self, trend_name, db: Session):
-        # Heuristic: multi-source coverage increases virality
-        from backend.storage.models import Signal
-        sources = db.query(Signal.source).filter(
-            Signal.title.contains(trend_name)
-        ).distinct().count()
+        return float(slope)
 
-        return min(sources * 10, 100)
-
-    def forecast_30_day_probability(self, trend_name, db: Session):
-        # 30-day forecast heuristic
-        return 0.75 # placeholder 75% probability
+    def viral_probability(self, momentum: float, confidence: float):
+        # Heuristic for virality
+        prob = (momentum * 0.7) + (confidence * 0.3)
+        return min(max(prob, 0.0), 1.0)
