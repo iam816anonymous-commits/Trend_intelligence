@@ -2,12 +2,14 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from .config import settings
 from .router import router as api_router
+from .middleware import log_requests_middleware
 import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
 
 app = FastAPI(title="TrendPulse AI API")
+app.middleware("http")(log_requests_middleware)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

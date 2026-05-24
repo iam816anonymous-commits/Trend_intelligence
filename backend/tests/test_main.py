@@ -12,7 +12,7 @@ async def test_read_root():
 @pytest.mark.asyncio
 async def test_health_check():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.get("/health")
+        response = await ac.get("/api/v1/health")
     assert response.status_code == 200
     data = response.json()
-    assert data["status"] == "healthy"
+    assert data["status"] == "operational"

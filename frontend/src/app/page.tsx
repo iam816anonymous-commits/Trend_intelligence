@@ -1,56 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TrendChart from "@/components/TrendChart";
+import TrendDataTable from "@/components/TrendDataTable";
 import LiveSignals from "@/components/LiveSignals";
 
 export default function Home() {
-  const [trends, setTrends] = useState([]);
-
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/trends`)
-      .then((res) => res.json())
-      .then((data) => setTrends(data));
-  }, []);
-
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-12">
-      <header className="flex justify-between items-end">
+      <header className="flex justify-between items-center bg-white p-6 rounded-2xl border shadow-sm border-slate-100">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-900">Intelligence Overview</h1>
-          <p className="text-slate-500 font-medium italic mt-1">Cross-signal market detection active.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-3">
+            Market Intelligence OS
+            <span className="text-[10px] px-2 py-0.5 bg-primary text-primary-foreground rounded uppercase font-black tracking-widest">Enterprise</span>
+          </h1>
+          <p className="text-slate-500 font-medium mt-1">Cross-signal predictive monitoring for India Tier-1/2/3.</p>
         </div>
-        <div className="text-right">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">System Status</p>
-          <div className="flex items-center gap-2 text-green-500 font-bold">
-            <div className="size-2 bg-green-500 rounded-full animate-pulse" />
-            Live Ingestion
+        <div className="flex gap-4">
+          <div className="text-right px-4 border-r">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Pulse</p>
+            <p className="text-xl font-black text-slate-800">84.2</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Signals Ingested</p>
+            <p className="text-xl font-black text-blue-600">1.2M+</p>
           </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section className="lg:col-span-2 space-y-6">
-          <h2 className="text-xl font-bold border-l-4 border-primary pl-4">Top Rising Trends</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {trends.slice(0, 4).map((trend: any) => (
-              <Card key={trend.id} className="overflow-hidden border-none shadow-sm bg-white hover:ring-1 ring-primary/20 transition-all">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-md line-clamp-1">{trend.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-black text-slate-800">{Math.round(trend.trend_score)}%</p>
-                  <TrendChart />
-                </CardContent>
-              </Card>
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <section className="lg:col-span-3 space-y-6">
+          <div className="flex justify-between items-end">
+            <h2 className="text-xl font-bold text-slate-800">Active Trends & Sentiment</h2>
+            <p className="text-xs text-blue-500 font-bold hover:underline cursor-pointer uppercase tracking-wider">Export PDF Report</p>
           </div>
+          <TrendDataTable />
         </section>
 
         <section className="space-y-6">
-          <h2 className="text-xl font-bold border-l-4 border-slate-400 pl-4">Real-time Signals</h2>
-          <LiveSignals />
+          <h2 className="text-xl font-bold text-slate-800">Signal Velocity</h2>
+          <div className="bg-white rounded-2xl border shadow-sm p-1">
+             <LiveSignals />
+          </div>
         </section>
       </div>
     </div>

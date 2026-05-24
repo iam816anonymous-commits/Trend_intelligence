@@ -1,23 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
-from backend.storage.models import Signal, Topic, Opportunity, SessionLocal
-from backend.api.config import settings
-from backend.embeddings.vector_store import VectorStore
-from backend.trends.opportunity import OpportunityFinder
-from backend.trends.geo_engine import GeoEngine
-from backend.trends.synthesis import SynthesisEngine
-from pydantic import BaseModel
-from typing import List, Optional
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from backend.storage.database import get_async_db
+from backend.storage.models import Signal, Topic, Opportunity
+from pydantic import BaseModel, ConfigDict
+from typing import List, Optional, Annotated
 import datetime
 
-router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+router = APIRouter(prefix="/api/v1")
 
 class SignalOut(BaseModel):
     id: int
@@ -25,8 +15,7 @@ class SignalOut(BaseModel):
     source: str
     region: str
     timestamp: datetime.datetime
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class TopicOut(BaseModel):
     id: int
@@ -34,47 +23,27 @@ class TopicOut(BaseModel):
     trend_score: float
     status: str
     confidence: float
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 @router.get("/signals", response_model=List[SignalOut])
-def read_signals(
+async def read_signals(
+    db: Annotated[AsyncSession, Depends(get_async_db)],
     skip: int = 0,
-    limit: int = 100,
-    region: Optional[str] = None,
-    type: Optional[str] = None,
-    db: Session = Depends(get_db)
+    limit: int = Query(default=100, le=500),
+    region: Optional[str] = None
 ):
-    query = db.query(Signal)
+    stmt = select(Signal)
     if region:
-        query = query.filter(Signal.region == region)
-    if type:
-        query = query.filter(Signal.type == type)
-    return query.offset(skip).limit(limit).all()
+        stmt = stmt.where(Signal.region == region)
+    result = await db.execute(stmt.offset(skip).limit(limit))
+    return result.scalars().all()
 
 @router.get("/trends", response_model=List[TopicOut])
-def read_trends(db: Session = Depends(get_db)):
-    return db.query(Topic).order_by(Topic.trend_score.desc()).all()
-
-@router.get("/opportunities")
-def read_opportunities(db: Session = Depends(get_db)):
-    return db.query(Opportunity).order_by(Opportunity.evidence_score.desc()).all()
-
-@router.get("/geo/pulse")
-def read_geo_pulse(db: Session = Depends(get_db)):
-    engine = GeoEngine(db)
-    return engine.get_tier2_rising_stars()
-
-@router.get("/synthesis")
-def read_synthesis(db: Session = Depends(get_db)):
-    engine = SynthesisEngine(db)
-    return engine.find_correlations()
-
-@router.get("/search")
-def semantic_search(q: str, limit: int = 10, db: Session = Depends(get_db)):
-    vs = VectorStore()
-    return vs.search(q, limit=limit)
+async def read_trends(db: Annotated[AsyncSession, Depends(get_async_db)]):
+    stmt = select(Topic).order_by(Topic.trend_score.desc())
+    result = await db.execute(stmt)
+    return result.scalars().all()
 
 @router.get("/health")
-def health_check():
-    return {"status": "healthy"}
+async def health_check():
+    return {"status": "operational", "version": "v1.0.0-b2b"}
