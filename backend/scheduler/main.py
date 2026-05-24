@@ -1,28 +1,22 @@
 import time
 import logging
-from backend.storage.models import SessionLocal, Source
-from backend.collectors.rss.collector import RSSCollector
+from backend.scheduler.task_manager import TaskManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("scheduler")
 
-def run_scheduler():
-    rss_collector = RSSCollector()
+def main():
+    manager = TaskManager()
     while True:
-        logger.info("Starting collection cycle...")
-        db = SessionLocal()
         try:
-            sources = db.query(Source).filter(Source.is_active == 1).all()
-            for source in sources:
-                if source.type == "rss":
-                    rss_collector.collect(db, source)
-            logger.info("Cycle complete.")
+            manager.run_collection_task()
+            manager.run_clustering_task()
+            manager.run_opportunity_task()
         except Exception as e:
-            logger.error(f"Scheduler error: {e}")
-        finally:
-            db.close()
+            logger.error(f"Scheduler loop error: {e}")
 
-        time.sleep(15 * 60) # 15 minutes
+        logger.info("Sleeping for 15 minutes...")
+        time.sleep(15 * 60)
 
 if __name__ == "__main__":
-    run_scheduler()
+    main()

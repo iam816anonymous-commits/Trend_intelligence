@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock
 from backend.storage.models import Signal, Topic
 from backend.trends.pulse_engine import TrendPulseEngine
+import datetime
 
 @pytest.fixture
 def mock_db():
@@ -16,10 +17,11 @@ def mock_vs(monkeypatch):
 
 def test_trend_score_calculation(mock_db, mock_vs):
     engine = TrendPulseEngine(mock_db)
+    now = datetime.datetime.utcnow()
     cluster = [
-        Signal(title="Signal 1", source="blinkit", region="Indore"),
-        Signal(title="Signal 2", source="reddit", region="Indore"),
-        Signal(title="Signal 3", source="zepto", region="Mumbai")
+        Signal(title="Signal 1", source="blinkit", region="Indore", timestamp=now),
+        Signal(title="Signal 2", source="reddit", region="Indore", timestamp=now),
+        Signal(title="Signal 3", source="zepto", region="Mumbai", timestamp=now - datetime.timedelta(hours=8))
     ]
     score = engine.calculate_trend_score(cluster)
     assert score > 0

@@ -1,4 +1,5 @@
 import requests
+import os
 from backend.api.main import settings
 
 class AIAnalyst:

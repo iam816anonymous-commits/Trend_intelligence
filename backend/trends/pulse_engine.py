@@ -39,14 +39,33 @@ class TrendPulseEngine:
         common = Counter(filtered).most_common(3)
         return " ".join([w[0] for w in common]).title()
 
-    def calculate_trend_score(self, cluster):
-        # Improved scoring logic
-        velocity = len(cluster) / 12.0 # Last 12h normalized
-        sources = len(set([s.source for s in cluster]))
-        source_diversity = sources / 5.0 # Max diversity score normalized to 5 sources
-        regions = len(set([s.region for s in cluster]))
+    def calculate_growth(self, signals):
+        # Compare signals in last 6h vs previous 6-12h
+        now = datetime.datetime.utcnow()
+        recent_count = len([s for s in signals if s.timestamp >= now - datetime.timedelta(hours=6)])
+        older_count = len([s for s in signals if s.timestamp < now - datetime.timedelta(hours=6)])
 
-        score = (velocity * 0.4) + (source_diversity * 0.4) + (regions * 0.2)
+        if older_count == 0: return 1.0 # 100% growth if new
+        return (recent_count - older_count) / older_count
+
+    def calculate_trend_score(self, cluster):
+        # trend_score = (velocity * .3 + source_growth * .25 + geo_spread * .15 + commerce_signal * .2 + social_acceleration * .1)
+        velocity = len(cluster) / 12.0
+        growth = self.calculate_growth(cluster)
+        sources = len(set([s.source for s in cluster]))
+        source_diversity = min(sources / 5.0, 1.0)
+        regions = len(set([s.region for s in cluster]))
+        geo_spread = min(regions / 10.0, 1.0)
+
+        commerce_boost = 1.2 if any(s.type == 'commerce' for s in cluster) else 1.0
+
+        score = (
+            velocity * 0.3 +
+            growth * 0.25 +
+            source_diversity * 0.25 +
+            geo_spread * 0.15
+        ) * commerce_boost
+
         return min(score * 100, 100)
 
     def run(self):

@@ -15,6 +15,15 @@ class OpportunityFinder:
             return "SaaS"
         return "Service"
 
+    def analyze_synthesis(self, topic):
+        # Look for cross-signal patterns
+        types = set([s.type for s in topic.signals])
+        if 'commerce' in types and 'consumer' in types:
+            return "Validated Demand: Social interest matching commerce signals."
+        if 'geo' in types and 'consumer' in types:
+            return "Localized Opportunity: Regional environmental signals driving demand."
+        return "Emerging Trend: Rising multi-source interest."
+
     def find_opportunities(self):
         # 1. Fetch High Growth Topics
         topics = self.db.query(Topic).filter(Topic.trend_score > 30).all()
@@ -28,7 +37,7 @@ class OpportunityFinder:
             opp_type = self.categorize_opp(topic.name)
             opp = Opportunity(
                 title=f"Launch {topic.name} {opp_type}",
-                description=f"Market intelligence shows significant signal clusters in {topic.name} across Tier-2 India.",
+                description=self.analyze_synthesis(topic),
                 market_niche=topic.name,
                 type=opp_type,
                 evidence_score=topic.trend_score,

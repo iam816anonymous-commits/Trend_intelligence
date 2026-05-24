@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from backend.storage.models import Signal, Topic, Opportunity, SessionLocal
 from backend.api.config import settings
+from backend.trends.opportunity import OpportunityFinder
+from backend.trends.geo_engine import GeoEngine
 from pydantic import BaseModel
 from typing import List, Optional
 import datetime
@@ -55,6 +57,11 @@ def read_trends(db: Session = Depends(get_db)):
 @router.get("/opportunities")
 def read_opportunities(db: Session = Depends(get_db)):
     return db.query(Opportunity).order_by(Opportunity.evidence_score.desc()).all()
+
+@router.get("/geo/pulse")
+def read_geo_pulse(db: Session = Depends(get_db)):
+    engine = GeoEngine(db)
+    return engine.get_tier2_rising_stars()
 
 @router.get("/health")
 def health_check():
