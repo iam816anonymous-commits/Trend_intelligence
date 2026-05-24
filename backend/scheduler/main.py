@@ -12,10 +12,11 @@ logger = logging.getLogger("Worker")
 def run_pulse():
     manager = TaskManager()
     try:
-        logger.info("Starting Pulse Cycle [Ingestion -> Clustering -> Synthesis]")
+        logger.info("Starting Pulse Cycle [Ingestion -> Clustering -> Learning -> Synthesis]")
 
         manager.run_collection_task()
         manager.run_clustering_task()
+        manager.run_learning_task()
         manager.run_opportunity_task()
 
         logger.info("Pulse Cycle Complete.")

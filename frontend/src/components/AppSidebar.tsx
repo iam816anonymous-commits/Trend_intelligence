@@ -1,11 +1,12 @@
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { LayoutDashboard, TrendingUp, Lightbulb, Map, Settings } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Lightbulb, Map, Brain, Settings } from "lucide-react";
 
 const items = [
   { title: "Overview", icon: LayoutDashboard, url: "/" },
   { title: "Trends", icon: TrendingUp, url: "/trends" },
   { title: "Opportunities", icon: Lightbulb, url: "/opportunities" },
   { title: "Geo Pulse", icon: Map, url: "/geo" },
+  { title: "Knowledge Base", icon: Brain, url: "/knowledge" },
   { title: "Settings", icon: Settings, url: "/settings" },
 ];
 

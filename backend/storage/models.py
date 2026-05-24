@@ -69,6 +69,22 @@ class Opportunity(Base):
     potential_roi = Column(String(50))
     execution_roadmap = Column(JSON) # Steps to execute
 
+class Knowledge(Base):
+    __tablename__ = "knowledge_base"
+    id = Column(Integer, primary_key=True, index=True)
+    concept = Column(String(200), unique=True, index=True)
+    definition = Column(Text)
+    category = Column(String(100))
+    first_detected = Column(DateTime, default=datetime.datetime.utcnow)
+    strength = Column(Float, default=0.0)
+
+class LearningLog(Base):
+    __tablename__ = "learning_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    action = Column(String(500))
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    impact_area = Column(String(100))
+
 class Source(Base):
     __tablename__ = "sources"
 

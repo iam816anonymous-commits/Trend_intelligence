@@ -5,6 +5,7 @@ from backend.collectors.commerce.collector import CommerceCollector
 from backend.processing.enricher import SignalEnricher
 from backend.trends.pulse_engine import TrendPulseEngine
 from backend.trends.opportunity import OpportunityFinder
+from backend.trends.learning_service import LearningService
 from backend.trends.alerts import AlertEngine
 
 logger = logging.getLogger("TaskManager")
@@ -42,6 +43,13 @@ class TaskManager:
         engine = TrendPulseEngine(self.db)
         topics = engine.run()
         logger.info(f"Task: Clustering complete. {len(topics)} topics updated.")
+
+    def run_learning_task(self):
+        logger.info("Task: Running agent self-learning cycle...")
+        service = LearningService(self.db)
+        learned = service.extract_new_knowledge()
+        service.suggest_taxonomy_expansion()
+        logger.info(f"Task: Learning complete. Agent learned {len(learned)} new concepts.")
 
     def run_opportunity_task(self):
         logger.info("Task: Running opportunity discovery...")

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from backend.storage.database import get_async_db
-from backend.storage.models import Signal, Topic, Opportunity
+from backend.storage.models import Signal, Topic, Opportunity, Knowledge, LearningLog
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional, Annotated
 import datetime
@@ -41,6 +41,18 @@ async def read_signals(
 @router.get("/trends", response_model=List[TopicOut])
 async def read_trends(db: Annotated[AsyncSession, Depends(get_async_db)]):
     stmt = select(Topic).order_by(Topic.trend_score.desc())
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
+@router.get("/knowledge")
+async def read_knowledge(db: Annotated[AsyncSession, Depends(get_async_db)]):
+    stmt = select(Knowledge)
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
+@router.get("/learning-logs")
+async def read_logs(db: Annotated[AsyncSession, Depends(get_async_db)]):
+    stmt = select(LearningLog).order_by(LearningLog.timestamp.desc()).limit(20)
     result = await db.execute(stmt)
     return result.scalars().all()
 
