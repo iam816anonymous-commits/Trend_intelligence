@@ -2,7 +2,7 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGrou
 import { LayoutDashboard, TrendingUp, Lightbulb, Map, Brain, Terminal, Settings } from "lucide-react";
 
 const items = [
-  { title: "Overview", icon: LayoutDashboard, url: "/" },
+  { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
   { title: "Trends", icon: TrendingUp, url: "/trends" },
   { title: "Opportunities", icon: Lightbulb, url: "/opportunities" },
   { title: "Geo Pulse", icon: Map, url: "/geo" },
